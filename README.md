@@ -1,127 +1,44 @@
 Vim Tmux Navigator
 ==================
 
-This plugin is a repackaging of [Mislav Marohnić's](https://mislav.net/) tmux-navigator
-configuration described in [this gist][]. When combined with a set of tmux
-key bindings, the plugin will allow you to navigate seamlessly between
-vim and tmux splits using a consistent set of hotkeys.
+Fork of [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) made
+in order to make the keybindings consistent with the ones used by the default vim 
+configuration, i.e. Ctrl-w + [hjkl].
 
-**NOTE**: This requires tmux v1.8 or higher.
-
-Usage
+Mappings
 -----
 
-This plugin provides the following mappings which allow you to move between
-Vim panes and tmux splits seamlessly.
-
-- `<ctrl-h>` => Left
-- `<ctrl-j>` => Down
-- `<ctrl-k>` => Up
-- `<ctrl-l>` => Right
-- `<ctrl-\>` => Previous split
-
-**Note** - you don't need to use your tmux `prefix` key sequence before using
-the mappings.
-
-If you want to use alternate key mappings, see the [configuration section
-below][].
+- `<ctrl-w>h` => Left
+- `<ctrl-w>j` => Down
+- `<ctrl-w>k` => Up
+- `<ctrl-w>l` => Right
+- `<ctrl-w>p` => Previous split
 
 Installation
 ------------
 
-### Vim
-
-If you don't have a preferred installation method, I recommend using [Vundle][].
-Assuming you have Vundle installed and configured, the following steps will
-install the plugin:
-
-Add the following line to your `~/.vimrc` file
+### Neovim (packer)
 
 ``` vim
-Plugin 'christoomey/vim-tmux-navigator'
+use {
+    'some0necoding/vim-tmux-navigator'
+}
 ```
 
 Then run
 
 ```
-:PluginInstall
+:PackerSync
 ```
 
-If you are using Vim 8+, you don't need any plugin manager. Simply clone this repository inside `~/.vim/pack/plugin/start/` directory and restart Vim.
+### tmux (TPM)
 
-```
-git clone git@github.com:christoomey/vim-tmux-navigator.git ~/.vim/pack/plugins/start/vim-tmux-navigator
-```
-
-### lazy.nvim
-
-If you are using [lazy.nvim](https://github.com/folke/lazy.nvim). Add the following plugin to your configuration.
-
-```lua
-{
-  "christoomey/vim-tmux-navigator",
-  cmd = {
-    "TmuxNavigateLeft",
-    "TmuxNavigateDown",
-    "TmuxNavigateUp",
-    "TmuxNavigateRight",
-    "TmuxNavigatePrevious",
-  },
-  keys = {
-    { "<c-h>", "<cmd><C-U>TmuxNavigateLeft<cr>" },
-    { "<c-j>", "<cmd><C-U>TmuxNavigateDown<cr>" },
-    { "<c-k>", "<cmd><C-U>TmuxNavigateUp<cr>" },
-    { "<c-l>", "<cmd><C-U>TmuxNavigateRight<cr>" },
-    { "<c-\\>", "<cmd><C-U>TmuxNavigatePrevious<cr>" },
-  },
-}
-```
-
-Then, restart Neovim and lazy.nvim will automatically install the plugin and configure the keybindings.
-
-### tmux
-
-To configure the tmux side of this customization there are two options:
-
-#### Add a snippet
-
-Add the following to your `~/.tmux.conf` file:
+Add the following lines to your ~/.tmux.conf:
 
 ``` tmux
-# Smart pane switching with awareness of Vim splits.
-# See: https://github.com/christoomey/vim-tmux-navigator
-is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
-    | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
-bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h'  'select-pane -L'
-bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j'  'select-pane -D'
-bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k'  'select-pane -U'
-bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l'  'select-pane -R'
-tmux_version='$(tmux -V | sed -En "s/^tmux ([0-9]+(.[0-9]+)?).*/\1/p")'
-if-shell -b '[ "$(echo "$tmux_version < 3.0" | bc)" = 1 ]' \
-    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\'  'select-pane -l'"
-if-shell -b '[ "$(echo "$tmux_version >= 3.0" | bc)" = 1 ]' \
-    "bind-key -n 'C-\\' if-shell \"$is_vim\" 'send-keys C-\\\\'  'select-pane -l'"
-
-bind-key -T copy-mode-vi 'C-h' select-pane -L
-bind-key -T copy-mode-vi 'C-j' select-pane -D
-bind-key -T copy-mode-vi 'C-k' select-pane -U
-bind-key -T copy-mode-vi 'C-l' select-pane -R
-bind-key -T copy-mode-vi 'C-\' select-pane -l
-```
-
-#### TPM
-
-If you'd prefer, you can use the Tmux Plugin Manager ([TPM][]) instead of
-copying the snippet.
-When using TPM, add the following lines to your ~/.tmux.conf:
-
-``` tmux
-set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'some0necoding/vim-tmux-navigator'
 run '~/.tmux/plugins/tpm/tpm'
 ```
-
-Thanks to Christopher Sexton who provided the updated tmux configuration in
-[this blog post][].
 
 Configuration
 -------------
@@ -130,12 +47,10 @@ Configuration
 
 If you don't want the plugin to create any mappings, you can use the five
 provided functions to define your own custom maps. You will need to define
-custom mappings in your `~/.vimrc` as well as update the bindings in tmux to
-match.
+custom mappings in your vim configuration as well as update the bindings in 
+tmux to match.
 
 #### Vim
-
-Add the following to your `~/.vimrc` to define your custom maps:
 
 ``` vim
 let g:tmux_navigator_no_mappings = 1
@@ -147,9 +62,17 @@ noremap <silent> {Right-Mapping} :<C-U>TmuxNavigateRight<cr>
 noremap <silent> {Previous-Mapping} :<C-U>TmuxNavigatePrevious<cr>
 ```
 
-*Note* Each instance of `{Left-Mapping}` or `{Down-Mapping}` must be replaced
-in the above code with the desired mapping. Ie, the mapping for `<ctrl-h>` =>
-Left would be created with `noremap <silent> <c-h> :<C-U>TmuxNavigateLeft<cr>`.
+#### Neovim
+
+``` vim
+vim.g.tmux_navigator_no_mappings = 1
+
+vim.api.nvim_set_keymap("n", "{Left-Mapping}",     ":<C-U>TmuxNavigateLeft<cr>",     { silent = true })
+vim.api.nvim_set_keymap("n", "{Down-Mapping}",     ":<C-U>TmuxNavigateDown<cr>",     { silent = true })
+vim.api.nvim_set_keymap("n", "{Up-Mapping}",       ":<C-U>TmuxNavigateUp<cr>",       { silent = true })
+vim.api.nvim_set_keymap("n", "{Right-Mapping}",    ":<C-U>TmuxNavigateRight<cr>",    { silent = true })
+vim.api.nvim_set_keymap("n", "{Previous-Mapping}", ":<C-U>TmuxNavigatePrevious<cr>", { silent = true })
+```
 
 ##### Autosave on leave
 
@@ -218,35 +141,6 @@ In interactive programs such as FZF, Ctrl+hjkl can be used instead of the arrow 
 ```diff
 - is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
 + is_vim="ps -o state= -o comm= -t '#{pane_tty}' | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf|foobar)(diff)?$'"
-```
-
-#### Restoring Clear Screen (C-l)
-
-The default key bindings include `<Ctrl-l>` which is the readline key binding
-for clearing the screen. The following binding can be added to your `~/.tmux.conf` file to provide an alternate mapping to `clear-screen`.
-
-``` tmux
-bind C-l send-keys 'C-l'
-```
-
-With this enabled you can use `<prefix> C-l` to clear the screen.
-
-Thanks to [Brian Hogan][] for the tip on how to re-map the clear screen binding.
-
-#### Restoring SIGQUIT (C-\\)
-
-The default key bindings also include `<Ctrl-\>` which is the default method of
-sending SIGQUIT to a foreground process. Similar to "Clear Screen" above, a key
-binding can be created to replicate SIGQUIT in the prefix table.
-
-``` tmux
-bind C-\\ send-keys 'C-\'
-```
-
-Alternatively, you can exclude the previous pane key binding from your `~/.tmux.conf`. If using TPM, the following line can be used to unbind the previous pane binding set by the plugin.
-
-``` tmux
-unbind -n C-\\
 ```
 
 #### Disable Wrapping
