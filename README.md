@@ -3,7 +3,7 @@ Vim Tmux Navigator
 
 Fork of [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) made
 in order to make the keybindings consistent with the ones used by the default vim 
-configuration, i.e. Ctrl-w + [hjkl].
+configuration, i.e. `Ctrl-W + [hjkl]`.
 
 Mappings
 -----
